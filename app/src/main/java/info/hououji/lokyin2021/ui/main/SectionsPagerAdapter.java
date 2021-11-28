@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import info.hououji.lokyin2021.DateFragment;
 import info.hououji.lokyin2021.LokYinFragment;
 import info.hououji.lokyin2021.R;
 import info.hououji.lokyin2021.StarFragment;
@@ -33,6 +34,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Return a PlaceholderFragment (defined as a static inner class below).
         if(position==0) return LokYinFragment.newInstance() ;
         if(position==1) return StarFragment.newInstance() ;
+        if(position==2) return DateFragment.newInstance() ;
         return PlaceholderFragment.newInstance(position + 1);
     }
 
