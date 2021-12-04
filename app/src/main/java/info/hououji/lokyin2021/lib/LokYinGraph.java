@@ -6,11 +6,16 @@ import android.util.Log;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+
+import swisseph.SweConst;
+import swisseph.SweDate;
+import swisseph.SwissEph;
 
 public class LokYinGraph implements  Constants{
 
@@ -20,6 +25,8 @@ public class LokYinGraph implements  Constants{
     //static Log log = LogFactory.getLog(LokYinGraph.class) ;
     //static HououjiLogger log = new HououjiLogger(TAG);
     static HououjiLogger log = new HououjiLoggerLocal(TAG);
+
+    SwissEph sw = new SwissEph();
 
 
 
@@ -42,6 +49,10 @@ public class LokYinGraph implements  Constants{
         } catch (ParseException e) {
             throw new RuntimeException(e) ;
         }
+    }
+
+    public LokYinGraph() {
+        sw.swe_set_ephe_path(null);
     }
 
     Date date ;
@@ -68,21 +79,45 @@ public class LokYinGraph implements  Constants{
         log.debug("timezone:" + TimeZone.getDefault()) ;
         log.debug("date:" + date) ;
 
-        // get year
-        eight[0] = (int)((date.getTime() - firstYear.getTime()) / solarReturn) % 60;
-
-        // get 24
-        long monthRemain = (date.getTime() - firstDay.getTime()) % solarReturn ;
-        log.debug("monthRemain=" + monthRemain) ;
         int i;
-        for(i=0; i<sTermInfo.length; i++){
-            if( sTermInfo[i]*60000 > monthRemain ) {
-                // bingo
-                break ;
-            }
+
+        Calendar c = Calendar.getInstance() ;
+        c.setTimeZone(TimeZone.getDefault());
+        c.setTime(date);
+
+
+        // get year
+        //eight[0] = (int)((date.getTime() - firstYear.getTime()) / solarReturn) % 60;
+        eight[0] = get60(date.getYear() + 1900 - 1984);
+
+
+                // get 24
+//        long monthRemain = (date.getTime() - firstDay.getTime()) % solarReturn ;
+//        log.debug("monthRemain=" + monthRemain) ;
+//        for(i=0; i<sTermInfo.length; i++){
+//            if( sTermInfo[i]*60000 > monthRemain ) {
+//                // bingo
+//                break ;
+//            }
+//        }
+//        i = i -2 ; // algroithm adjust
+
+        double[] xp= new double[6];
+        StringBuffer serr = new StringBuffer();
+        int ret = sw.swe_calc_ut(getJulDay(c),
+                SweConst.SE_SUN,
+                SweConst.SEFLG_MOSEPH,
+                xp,
+                serr);
+        i = get24((int)(xp[0] / 15) + 5) ;
+
+        if(date.getMonth() ==0 ||
+                (date.getMonth() ==1 && i<=1))
+        {
+            // 新曆年過而未過立春
+            eight[0] = get60(eight[0] - 1) ;
         }
 
-        i = i -2 ; // algroithm adjust
         log.debug("SolarTerm=" + SolarTerm[get24(i)]) ;
 
         month = get12((i + 22) / 2 + 2) ;
@@ -606,7 +641,7 @@ public class LokYinGraph implements  Constants{
             setString(x  , y+i, getRelation( skysEle[fourChapter[0][0]], groundsEle[threePass[i]] ) ) ;
             setString(x+1, y+i, skys[cycleGround2Sky[threePass[i]]]) ;
             setString(x+2, y+i, grounds[threePass[i]]) ;
-            setString(x+3, y+i, gods[threePass[i]]) ;
+            setString(x+3, y+i, gods[skyPlanelead[(threePass[i]-skyPlane[0]+12)%12]]) ;
 
         }
 //
@@ -671,6 +706,24 @@ public class LokYinGraph implements  Constants{
     private int get24(int i) {
         return ((i % 24) + 48) % 24 ;
     }
+    private int get60(int i) {
+        return ((i % 60) + 120) % 60 ;
+    }
+
+
+    public static double getJulDay(Calendar time)
+    {
+        time.setTimeZone(TimeZone.getTimeZone("Universal"));
+
+        double hour = time.get(Calendar.HOUR_OF_DAY)
+                + time.get(Calendar.MINUTE) / 60.0
+                + time.get(Calendar.SECOND) / 3600.0;
+        double jday = SweDate.getJulDay(time.get(Calendar.YEAR),
+                time.get(Calendar.MONTH) + 1,
+                time.get(Calendar.DAY_OF_MONTH),
+                hour);
+        return jday;
+    }
 
     public static void main(String arg[]){
         main1(arg) ;
@@ -693,6 +746,9 @@ public class LokYinGraph implements  Constants{
         }
     }
 
+    public static void testSwissEphemeris() {
+
+    }
     public static void main1(String arg[]) {
 //		for(int i=0;i<12;i++) {
 //			System.out.println(grounds[i] + " " + grounds[punish[i]]);
