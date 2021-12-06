@@ -71,6 +71,9 @@ public class LokYinGraph implements  Constants{
     public int space[] = new int[2] ;
 
     public int threePass[] = new int[]{-1,-1,-1} ;
+
+    public String resultSevenBodies[] = new String[7] ;
+
     String name = "" ;
 
     public void setDate(Date date) {
@@ -131,6 +134,30 @@ public class LokYinGraph implements  Constants{
 
         monthlead = get12( (24 - i) / 2 + 1) ;
         log.debug("將:" + grounds[monthlead]) ;
+
+        // 七政
+        int[] planets = { SweConst.SE_SUN,
+                SweConst.SE_MOON,
+                SweConst.SE_MERCURY,
+                SweConst.SE_VENUS,
+                SweConst.SE_MARS,
+                SweConst.SE_JUPITER,
+                SweConst.SE_SATURN
+//                SweConst.SE_TRUE_NODE
+        };
+
+        for(int j=0; j<planets.length; j++) {
+            ret = sw.swe_calc_ut(getJulDay(c),
+                    planets[j],
+                    SweConst.SEFLG_MOSEPH,
+                    xp,
+                    serr);
+            int deg = ((int)xp[0]) % 30 ;
+            int min = (int)((xp[0] - (int)xp[0]) * 60) ;
+            int castle = (int)(xp[0] / 30) ;
+            resultSevenBodies[j] = sevenBodyName[j] + "  " + padleft(""+deg,"0", 2)
+                    +grounds[get12(10 - castle)] + padleft(""+min, "0", 2) ;
+        }
 
         long hourRemain = ((date.getTime() - first60Day.getTime()) % dayLong) ;
         log.debug("hourRemain 1:" + hourRemain) ;
@@ -724,6 +751,15 @@ public class LokYinGraph implements  Constants{
                 hour);
         return jday;
     }
+
+    public static String padleft(String s, String pad, int length) {
+        if(s == null) s ="" ;
+        while(s.length() <length) {
+            s = pad + s ;
+        }
+        return s;
+    }
+
 
     public static void main(String arg[]){
         main1(arg) ;

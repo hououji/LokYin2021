@@ -46,7 +46,7 @@ public class LokyinDrawable extends Drawable {
         int height = getBounds().height();
 
         //textSize = Math.min(width, height) / 16 ;
-        textSize = Math.min(width/16, height/22)  ;
+        textSize = Math.min(width/16, height/28)  ;
         lineHeight = textSize * 1.3f;
 
         defaultPaint.setTextSize((float)(textSize));
@@ -78,17 +78,30 @@ public class LokyinDrawable extends Drawable {
             }
         }
 
+        String[] resultSevenBody = ly.resultSevenBodies ;
+        resultX = textSize * 2.5f ;
+        resultY = resultY +14*textSize*textMargin ;
+        for(int row=0; row<4; row++) {
+            canvas.drawText(resultSevenBody[row], resultX, resultY + row*textSize*textMargin, defaultPaint);
+        }
+        resultX = textSize * 8.5f ;
+        for(int row=0; row<3; row++) {
+            canvas.drawText(resultSevenBody[row+4], resultX, resultY + row*textSize*textMargin, defaultPaint);
+        }
+
 
 //        float radius = Math.min(width, height) / 2;
 //        defaultPaint.setStyle(Paint.Style.STROKE);
 //        defaultPaint.setStrokeWidth(5);
 //        canvas.drawCircle(width/2, height/2, radius, defaultPaint);
 //       // canvas.drawRect(0,0,width-1,height-1,redPaint);
-        defaultPaint.setARGB(255, 0, 255, 0);
-        redPaint.setStyle(Paint.Style.STROKE);
-        redPaint.setStrokeWidth(5);
-        int round = Math.min(width,height) / 20 ;
-        canvas.drawRoundRect(5,5,width-10,height-10,round,round,redPaint);
+
+
+//        defaultPaint.setARGB(255, 0, 255, 0);
+//        redPaint.setStyle(Paint.Style.STROKE);
+//        redPaint.setStrokeWidth(5);
+//        int round = Math.min(width,height) / 20 ;
+//        canvas.drawRoundRect(5,5,width-10,height-10,round,round,redPaint);
 
     }
 
