@@ -10,6 +10,7 @@ public class HououjiLogger {
 
     String TAG = "" ;
     public void debug(String s) {
+
         Log.d(TAG,s ) ;
     }
 

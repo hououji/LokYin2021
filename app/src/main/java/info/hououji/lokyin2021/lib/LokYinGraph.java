@@ -250,7 +250,7 @@ public class LokYinGraph implements  Constants{
         if( isMutualHard( skysEle[fourChapter[0][0]], groundsEle[fourChapter[0][1]] )) {
             hasHard = true ;
         }
-        for(i=1;i<3;i++) {
+        for(i=1;i<=3;i++) {
             if( isMutualHard( groundsEle[fourChapter[i][0]], groundsEle[fourChapter[i][1]] )) {
                 hasHard = true ;
                 break ;
@@ -273,7 +273,7 @@ public class LokYinGraph implements  Constants{
         if(skyPlane[0] == 0) {
             name = "伏吟" ;
             if( !hasHard ) {
-                threePass[0] = fourChapter[day % 2][1] ;
+                threePass[0] = fourChapter[(day % 2)*2][1] ;
             }else{
                 threePass[0] = fourChapter[0][1] ;
             }
@@ -287,7 +287,14 @@ public class LokYinGraph implements  Constants{
                 }
             }else{
                 threePass[1] = punish[threePass[0]] ;
-                threePass[2] = punish[threePass[1]] ;
+                if(threePass[1] == 0) {
+                    // 卯子午
+                    name = "杜傳" ;
+                    threePass[2] = 6;
+                }else{
+                    threePass[2] = punish[threePass[1]] ;
+                }
+
             }
             return ;
         }
@@ -332,7 +339,7 @@ public class LokYinGraph implements  Constants{
                     threePass[0] = get12(day + 4);
                 }
                 threePass[1] = fourChapter[0][1] ;
-
+                threePass[2] = fourChapter[0][1] ;
                 return ;
             }
 
@@ -362,7 +369,7 @@ public class LokYinGraph implements  Constants{
             if(day % 2 == 0) {
                 threePass[0] = skyPlane[9] ;
                 threePass[1] = fourChapter[3][0] ;
-                threePass[2] = fourChapter[0][0] ;
+                threePass[2] = sky2ground[fourChapter[0][0]] ;
             }else{
                 for(i=0; i<12;i++){
                     if(skyPlane[i] == 9) {
@@ -370,7 +377,7 @@ public class LokYinGraph implements  Constants{
                         break ;
                     }
                 }
-                threePass[1] = fourChapter[0][0] ;
+                threePass[1] = sky2ground[fourChapter[0][0]] ;
                 threePass[2] = fourChapter[3][0] ;
             }
 
@@ -495,7 +502,7 @@ public class LokYinGraph implements  Constants{
             return ;
         }
 
-
+        name = "涉害" ;
         int hardCount[] = new int[chapters.size()] ;
         int diff = get12(12 - skyPlane[0]) ;
 
@@ -527,6 +534,7 @@ public class LokYinGraph implements  Constants{
         for(int j=1;j<chapters.size();j++) {
             if( hardCount[j] > hardCount[maxChapter]) {
                 sameHard = false ;
+                maxChapter = j ;
             }else if(hardCount[j] == hardCount[maxChapter]) {
                 sameHard = true ;
             }
@@ -762,7 +770,7 @@ public class LokYinGraph implements  Constants{
 
 
     public static void main(String arg[]){
-        main1(arg) ;
+        main2(arg) ;
     }
 
 
@@ -773,7 +781,11 @@ public class LokYinGraph implements  Constants{
                 LokYinGraph ly = new LokYinGraph() ;
                 ly.setDate(new Date()) ;
                 ly.threePass = new int[]{-1,-1,-1} ;
-                ly.makeThreePass(j, i) ;
+                ly.makeThreePass((12-sky2ground[i%10] + j)%12, i) ;
+                System.out.println(i + " " + skys[i%10] + grounds[i%12] + "  干上 "+grounds[ly.fourChapter[0][1]] + " "  + j
+                    + grounds[ly.threePass[0]] + grounds[ly.threePass[1]] + grounds[ly.threePass[2]]
+                        + " " +ly.name
+                ) ;
                 if(ly.threePass[0] == -1) {
                     System.out.println(i + " " + skys[i%10] + grounds[i%12] + "  干上 "+grounds[ly.fourChapter[0][1]] + " "  + j) ;
                 }
@@ -782,9 +794,6 @@ public class LokYinGraph implements  Constants{
         }
     }
 
-    public static void testSwissEphemeris() {
-
-    }
     public static void main1(String arg[]) {
 //		for(int i=0;i<12;i++) {
 //			System.out.println(grounds[i] + " " + grounds[punish[i]]);
@@ -792,9 +801,11 @@ public class LokYinGraph implements  Constants{
         LokYinGraph ly = new LokYinGraph() ;
         ly.setDate(new Date()) ;
         ly.threePass = new int[]{-1,-1,-1} ;
-        ly.makeThreePass(4, 14) ; // 子上神, day
+        int day = 3;
+        int skyStart = (12-sky2ground[day%10] + 7)%12 ;
+        ly.makeThreePass(skyStart, day) ; // 子上神, day
 
-        log.debug("name:" + ly.name) ;
+        System.out.println("name:" + ly.name) ;
         String result[] = ly.getResult() ;
         for(int i=0; i<14; i++) {
             for(int j=0;j<6;j++){
