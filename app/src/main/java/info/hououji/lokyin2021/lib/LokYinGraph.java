@@ -261,7 +261,7 @@ public class LokYinGraph implements  Constants{
         // check 遙剋
         boolean hasLongHard = false ;
         if(hasHard) hasLongHard = true;
-        for(i=1;i<3;i++) {
+        for(i=1;i<=3;i++) {
             if( isMutualHard( skysEle[fourChapter[0][0]], groundsEle[fourChapter[i][1]] )) {
                 hasLongHard = true ;
                 break ;
@@ -278,7 +278,7 @@ public class LokYinGraph implements  Constants{
                 threePass[0] = fourChapter[0][1] ;
             }
             if(threePass[0] == punish[threePass[0]]) {
-                threePass[1] = fourChapter[(day % 2 + 2)%4][1] ;
+                threePass[1] = fourChapter[((day % 2) * 2 + 2)%4][1] ;
                 if(threePass[1] == punish[threePass[1]]) {
                     threePass[2] = (threePass[1] + 6) % 12 ;
                     name = "杜傳" ;
@@ -333,7 +333,7 @@ public class LokYinGraph implements  Constants{
 
                 if(day % 2 == 0) {
                     // 陽日干合上頭
-                    threePass[0] = sky2ground[(day + 5) % 10];
+                    threePass[0] = skyPlane[sky2ground[(day + 5) % 10]];
                 }else{
                     // 柔日支前三合寄
                     threePass[0] = get12(day + 4);
@@ -368,8 +368,8 @@ public class LokYinGraph implements  Constants{
             name = "昴星" ;
             if(day % 2 == 0) {
                 threePass[0] = skyPlane[9] ;
-                threePass[1] = fourChapter[3][0] ;
-                threePass[2] = sky2ground[fourChapter[0][0]] ;
+                threePass[1] = fourChapter[2][1] ;
+                threePass[2] = fourChapter[0][1] ;
             }else{
                 for(i=0; i<12;i++){
                     if(skyPlane[i] == 9) {
@@ -377,8 +377,8 @@ public class LokYinGraph implements  Constants{
                         break ;
                     }
                 }
-                threePass[1] = sky2ground[fourChapter[0][0]] ;
-                threePass[2] = fourChapter[3][0] ;
+                threePass[1] = fourChapter[0][1] ;
+                threePass[2] = fourChapter[2][1] ;
             }
 
             return ;
@@ -610,6 +610,19 @@ public class LokYinGraph implements  Constants{
     }
 
     private boolean sameHardSameSeason(List<Integer> maxChapters, int day) {
+
+        boolean allTheSame = true;
+        for(int i=0; i<maxChapters.size(); i++) {
+            if(fourChapter[maxChapters.get(i)][1] != fourChapter[maxChapters.get(0)][1]) {
+                allTheSame = false;
+            }
+        }
+
+        if(allTheSame) {
+            threePass[0] = fourChapter[maxChapters.get(0)][1] ;
+            return true;
+        }
+
         if(day % 2 == 0) {
             if( maxChapters.contains(0) ) {
                 log.warn("綴瑕") ;
@@ -618,13 +631,14 @@ public class LokYinGraph implements  Constants{
                 return true;
             }
         }else{
-            if( maxChapters.contains(3) ) {
+            if( maxChapters.contains(2) ) {
                 log.warn("復等") ;
                 name = "復等" ;
-                threePass[0] = fourChapter[3][1] ;
+                threePass[0] = fourChapter[2][1] ;
                 return true;
             }
         }
+
         log.warn("綴瑕復等 不入干支") ;
         return false ;
     }
@@ -769,9 +783,7 @@ public class LokYinGraph implements  Constants{
     }
 
 
-    public static void main(String arg[]){
-        main2(arg) ;
-    }
+
 
 
     public static void main2(String arg[]) {
@@ -794,6 +806,10 @@ public class LokYinGraph implements  Constants{
         }
     }
 
+    public static void main(String arg[]){
+        main2(arg) ;
+    }
+
     public static void main1(String arg[]) {
 //		for(int i=0;i<12;i++) {
 //			System.out.println(grounds[i] + " " + grounds[punish[i]]);
@@ -801,8 +817,8 @@ public class LokYinGraph implements  Constants{
         LokYinGraph ly = new LokYinGraph() ;
         ly.setDate(new Date()) ;
         ly.threePass = new int[]{-1,-1,-1} ;
-        int day = 3;
-        int skyStart = (12-sky2ground[day%10] + 7)%12 ;
+        int day = 15;
+        int skyStart = (12-sky2ground[day%10] + 11)%12 ;
         ly.makeThreePass(skyStart, day) ; // 子上神, day
 
         System.out.println("name:" + ly.name) ;
