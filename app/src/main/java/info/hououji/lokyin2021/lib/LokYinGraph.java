@@ -276,6 +276,16 @@ public class LokYinGraph implements  Constants{
                 threePass[0] = fourChapter[(day % 2)*2][1] ;
             }else{
                 threePass[0] = fourChapter[0][1] ;
+                if(fourChapter[0][0] == 1) {
+                    // 乙伏吟上神為辰自刑, 取支上神為中
+                    threePass[1] = fourChapter[2][1];
+                    if(threePass[1] == punish[threePass[1]]) {
+                        threePass[2] = (threePass[1] + 6) % 12 ;
+                    }else{
+                        threePass[2] = punish[threePass[1]] ;
+                    }
+                    return ;
+                }
             }
             if(threePass[0] == punish[threePass[0]]) {
                 threePass[1] = fourChapter[((day % 2) * 2 + 2)%4][1] ;
@@ -817,8 +827,8 @@ public class LokYinGraph implements  Constants{
         LokYinGraph ly = new LokYinGraph() ;
         ly.setDate(new Date()) ;
         ly.threePass = new int[]{-1,-1,-1} ;
-        int day = 15;
-        int skyStart = (12-sky2ground[day%10] + 11)%12 ;
+        int day = 40;
+        int skyStart = (12-sky2ground[day%10] + 5)%12 ;
         ly.makeThreePass(skyStart, day) ; // 子上神, day
 
         System.out.println("name:" + ly.name) ;

@@ -13,11 +13,11 @@ public class HououjiLoggerLocal extends HououjiLogger{
     String TAG = "" ;
     public void debug(String s) {
 
-//        System.out.println(s ) ;
+        //System.out.println(s ) ;
     }
 
     public void warn(String s) {
 
-//        System.out.println(s);
+        //System.out.println(s);
     }
 }
